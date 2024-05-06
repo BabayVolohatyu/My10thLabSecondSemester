@@ -43,7 +43,7 @@ struct OperationApplier {
     T result;
 
     OperationApplier(T operand, char operation) : operation{operation}, operand{operand} {}
-    ~OperationApplier();
+    ~OperationApplier(){};
 
     T operator()() {
         switch (operation) {
@@ -65,9 +65,10 @@ struct OperationApplier {
 };
 
 double calculate(std::stack<std::string> &stack) {
+    if(find_operation_and_location(stack).second == 0) stack.pop();
+    double result = std::stod(stack.top());
     OperationApplier<double> operation_to_do{std::stod(stack.top()),
                                              find_operation_and_location(stack).first};
-    double result = (find_operation_and_location(stack).second == 0) ? 0 : std::stod(stack.top());
     stack.pop();
     while (!stack.empty()) {
         operation_to_do.operation = find_operation_and_location(stack).first;
@@ -92,6 +93,7 @@ int main() {
     expression.push(std::to_string(2));
     expression.push(std::to_string(2));
     expression.push(std::to_string(4));
+    expression.emplace("+");
     std::cout << "Current stack is: ";
     show_stack(expression);
     std::cout << "Result: " << calculate(expression);
