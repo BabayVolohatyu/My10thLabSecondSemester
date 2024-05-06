@@ -18,7 +18,13 @@ std::pair<char, int> find_operation_and_location(std::stack<std::string> &stack)
     int pos = 0;
     while (!stack_to_find.empty()) {
         if (stack_to_find.top().size() > 1) {
-            stack_to_find.pop();
+            for(const char &c1 : stack_to_find.top()){
+                for (const char &c2: operations) {
+                    if (c1==c2) {
+                        return std::make_pair(c1,pos);
+                    }
+                }
+            }
             pos++;
             continue;
         } else {
@@ -43,7 +49,7 @@ struct OperationApplier {
     T result;
 
     OperationApplier(T operand, char operation) : operation{operation}, operand{operand} {}
-    ~OperationApplier();
+    ~OperationApplier(){};
 
     T operator()() {
         switch (operation) {
@@ -65,9 +71,10 @@ struct OperationApplier {
 };
 
 double calculate(std::stack<std::string> &stack) {
+    while(find_operation_and_location(stack).second == 0) stack.pop();
     OperationApplier<double> operation_to_do{std::stod(stack.top()),
                                              find_operation_and_location(stack).first};
-    double result = (find_operation_and_location(stack).second == 0) ? 0 : std::stod(stack.top());
+    double result = std::stod(stack.top());
     stack.pop();
     while (!stack.empty()) {
         operation_to_do.operation = find_operation_and_location(stack).first;
@@ -92,6 +99,7 @@ int main() {
     expression.push(std::to_string(2));
     expression.push(std::to_string(2));
     expression.push(std::to_string(4));
+    expression.emplace("++");
     std::cout << "Current stack is: ";
     show_stack(expression);
     std::cout << "Result: " << calculate(expression);
