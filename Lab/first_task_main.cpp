@@ -35,31 +35,47 @@ std::pair<char, int> find_operation_and_location(std::stack<std::string> &stack)
     return {};
 }
 
+template<typename T>
+struct OperationApplier {
+    char operation;
+    int operation_pos;
+    T operand;
+    T result;
+
+    OperationApplier(T operand, char operation) : operation{operation}, operand{operand} {}
+
+    T operator()() {
+        switch (operation) {
+            case '+':
+                result += operand;
+                break;
+            case '-':
+                result -= operand;
+                break;
+            case '*':
+                result *= operand;
+                break;
+            case '/':
+                result /= operand;
+                break;
+        }
+        return result;
+    }
+};
+
 double calculate(std::stack<std::string> &stack) {
-    std::pair<char, int> operation;
-    double result = (find_operation_and_location(stack).second==0)?0:std::stod(stack.top());
+    OperationApplier<double> operation_to_do{std::stod(stack.top()),
+                                             find_operation_and_location(stack).first};
+    double result = (find_operation_and_location(stack).second == 0) ? 0 : std::stod(stack.top());
     stack.pop();
     while (!stack.empty()) {
-        operation.first = find_operation_and_location(stack).first;
-        operation.second = find_operation_and_location(stack).second;
-        for (int i = 0; i < operation.second; i++) {
-            switch (operation.first) {
-                case '+':
-                    result += std::stod(stack.top());
-                    break;
-                case '-':
-                    result-= std::stod(stack.top());
-                    stack.pop();
-                    break;
-                case '*':
-                    result*=std::stod(stack.top());
-                    stack.pop();
-                    break;
-                case '/':
-                    result/=std::stod(stack.top());
-                    stack.pop();
-                    break;
-            }
+        operation_to_do.operation = find_operation_and_location(stack).first;
+        operation_to_do.operation_pos = find_operation_and_location(stack).second;
+        operation_to_do.result = result;
+        operation_to_do.operand = std::stod(stack.top());
+        for (int i = 0; i < operation_to_do.operation_pos; i++) {
+            result = operation_to_do();
+            stack.pop();
         }
         stack.pop();
     }
@@ -74,10 +90,9 @@ int main() {
     expression.emplace("+");
     expression.push(std::to_string(2));
     expression.push(std::to_string(2));
+    expression.push(std::to_string(4));
     std::cout << "Current stack is: ";
     show_stack(expression);
-    std::cout << "\nFound " << find_operation_and_location(expression).first << " with pos "
-              << find_operation_and_location(expression).second << "\n";
-    std::cout << "Result: " <<calculate(expression);
+    std::cout << "Result: " << calculate(expression);
     return 0;
 }
