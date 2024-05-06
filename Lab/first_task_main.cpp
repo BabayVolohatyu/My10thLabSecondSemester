@@ -1,6 +1,5 @@
 #include <iostream>
 #include <stack>
-#include <algorithm>
 
 void show_stack(std::stack<std::string> &stack) {
     std::stack<std::string> stack_to_show = stack;
@@ -18,10 +17,10 @@ std::pair<char, int> find_operation_and_location(std::stack<std::string> &stack)
     int pos = 0;
     while (!stack_to_find.empty()) {
         if (stack_to_find.top().size() > 1) {
-            for(const char &c1 : stack_to_find.top()){
+            for (const char &c1: stack_to_find.top()) {
                 for (const char &c2: operations) {
-                    if (c1==c2) {
-                        return std::make_pair(c1,pos);
+                    if (c1 == c2) {
+                        return std::make_pair(c1, pos);
                     }
                 }
             }
@@ -49,7 +48,8 @@ struct OperationApplier {
     T result;
 
     OperationApplier(T operand, char operation) : operation{operation}, operand{operand} {}
-    ~OperationApplier(){};
+
+    ~OperationApplier() {};
 
     T operator()() {
         switch (operation) {
@@ -71,7 +71,7 @@ struct OperationApplier {
 };
 
 double calculate(std::stack<std::string> &stack) {
-    while(find_operation_and_location(stack).second == 0) stack.pop();
+    while (find_operation_and_location(stack).second == 0) stack.pop();
     OperationApplier<double> operation_to_do{std::stod(stack.top()),
                                              find_operation_and_location(stack).first};
     double result = std::stod(stack.top());
