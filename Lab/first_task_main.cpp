@@ -43,6 +43,7 @@ struct OperationApplier {
     T result;
 
     OperationApplier(T operand, char operation) : operation{operation}, operand{operand} {}
+    ~OperationApplier();
 
     T operator()() {
         switch (operation) {
