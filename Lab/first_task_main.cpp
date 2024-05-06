@@ -35,16 +35,49 @@ std::pair<char, int> find_operation_and_location(std::stack<std::string> &stack)
     return {};
 }
 
+double calculate(std::stack<std::string> &stack) {
+    std::pair<char, int> operation;
+    double result = (find_operation_and_location(stack).second==0)?0:std::stod(stack.top());
+    stack.pop();
+    while (!stack.empty()) {
+        operation.first = find_operation_and_location(stack).first;
+        operation.second = find_operation_and_location(stack).second;
+        for (int i = 0; i < operation.second; i++) {
+            switch (operation.first) {
+                case '+':
+                    result += std::stod(stack.top());
+                    break;
+                case '-':
+                    result-= std::stod(stack.top());
+                    stack.pop();
+                    break;
+                case '*':
+                    result*=std::stod(stack.top());
+                    stack.pop();
+                    break;
+                case '/':
+                    result/=std::stod(stack.top());
+                    stack.pop();
+                    break;
+            }
+        }
+        stack.pop();
+    }
+    stack.push(std::to_string(result));
+    return result;
+}
+
 int main() {
     std::stack<std::string> expression;
+    expression.emplace("/");
+    expression.push(std::to_string(2));
     expression.emplace("+");
-    expression.push(std::to_string(90));
-    expression.push(std::to_string(56));
-    expression.push(std::to_string(9));
-    expression.push(std::to_string(5));
+    expression.push(std::to_string(2));
+    expression.push(std::to_string(2));
     std::cout << "Current stack is: ";
     show_stack(expression);
     std::cout << "\nFound " << find_operation_and_location(expression).first << " with pos "
-              << find_operation_and_location(expression).second <<"\n";
+              << find_operation_and_location(expression).second << "\n";
+    std::cout << "Result: " <<calculate(expression);
     return 0;
 }
