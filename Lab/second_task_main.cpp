@@ -1,12 +1,10 @@
 #include <iostream>
 #include <vector>
 #include <stack>
-#include <map>
 
 bool is_correct(std::string &expr) {
-    // Declare a stack to hold the previous brackets.
     std::stack<char> temp;
-    for (char i : expr) {
+    for (char i: expr) {
         if (temp.empty()) temp.push(i);
         else if ((temp.top() == '(' && i == ')')
                  || (temp.top() == '{' && i == '}')
@@ -29,7 +27,7 @@ int main() {
             case '}':
             case ']':
             case ')':
-                brackets+= c;
+                brackets += c;
                 break;
             default:
                 continue;
