@@ -3,4 +3,5 @@ project(Lab)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(Lab first_task_main.cpp)
+add_executable(Lab first_task_main.cpp
+        second_task_main.cpp)
